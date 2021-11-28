@@ -15,6 +15,9 @@ module afu
 
   reg [63:0] buffer_addr;
 
+  t_ccip_c0_ReqMmioHdr mmio_hdr;
+  assign mmio_hdr = t_ccip_c0_ReqMmioHdr'(rx.c0.hdr);
+
   always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
       buffer_addr <= 0;
