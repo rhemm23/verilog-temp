@@ -50,7 +50,6 @@ int main() {
   fpga_token token;
   fpga_guid guid;
 
-  uint64_t *mmio_space = NULL;
   uint32_t num_matches = 0;
   
   if (uuid_parse(AFU_ACCEL_UUID, guid) < 0) {
@@ -88,7 +87,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  if (fpgaMapMMIO(handle, 0, &mmio_space) != FPGA_OK) {
+  if (fpgaMapMMIO(handle, 0, NULL) != FPGA_OK) {
     close_fpga_handle(handle);
     destroy_token_object(&token);
     destroy_properties_object(&filter);
@@ -123,11 +122,9 @@ int main() {
   }
 
   /* Set shared memory address MMIO register */
-  mmio_space[5] = physical_addr;
+  fpgaWriteMMIO64(handle, 0, 40, physical_addr >> 6);
 
   usleep(1000);
-
-  printf("buf addr: %" PRIx64 "\n", physical_addr);
 
   volatile char *buf = (volatile char*)buffer;
 
