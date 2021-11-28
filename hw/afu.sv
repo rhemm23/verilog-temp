@@ -15,17 +15,6 @@ module afu
 
   reg [63:0] buffer_addr;
 
-  t_ccip_c0_ReqMmioHdr mmio_hdr;
-  assign mmio_hdr = t_ccip_c0_ReqMmioHdr'(rx.c0.hdr);
-
-  assign tx.c1.data = t_ccip_clData'('h0021646c726f77206f6c6c6548);
-
-  t_cci_mpf_c1_ReqMemHdr wr_hdr;
-  assign wr_hdr = cci_mpf_c1_genReqHdr(eREQ_WRLINE_I,
-                                        mem_addr,
-                                        t_cci_mdata'(0),
-                                        cci_mpf_defaultReqHdrParams());
-
   always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
       buffer_addr <= 0;
