@@ -40,7 +40,7 @@ module ccip_std_afu (
     input logic pClk,
     input logic pClkDiv2,
     input logic pClkDiv4,
-    input lgoic uClk_usr,
+    input logic uClk_usr,
     input logic uClk_usrDiv2,
 
     /*

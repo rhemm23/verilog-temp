@@ -1,3 +1,5 @@
+
+`include "platform_if.vh"
 `include "afu_json_info.vh"
 
 module afu
