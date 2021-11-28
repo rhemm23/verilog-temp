@@ -127,7 +127,7 @@ int main() {
 
   usleep(1000);
 
-  printf("buf addr: " PRIx64 "\n", physical_addr);
+  printf("buf addr: %" PRIx64 "\n", physical_addr);
 
   volatile char *buf = (volatile char*)buffer;
 
