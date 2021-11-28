@@ -72,7 +72,7 @@ module ccip_std_afu (
     pck_cp2af_pwrState_q <= pck_cp2af_pwrState;
     pck_cp2af_error_q <= pck_cp2af_error;
     pck_cp2af_sRx_q <= pck_cp2af_sRx;
-    pck_af2cp_sTx_q <= pck_af2cp_sTx;
+    pck_af2cp_sTx <= pck_af2cp_sTx_q;
   end
 
   afu a (
