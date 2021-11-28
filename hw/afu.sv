@@ -13,11 +13,14 @@ module afu
 
   logic [127:0] afu_id = `AFU_ACCEL_UUID;
 
+  reg [63:0] buffer_addr;
+
   t_ccip_c0_ReqMmioHdr mmio_hdr;
   assign mmio_hdr = t_ccip_c0_ReqMmioHdr'(rx.c0.hdr);
 
   always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
+      buffer_addr <= 0;
       tx.c0.hdr <= 0;
       tx.c0.valid <= 0;
       tx.c1.hdr <= 0;
@@ -73,12 +76,26 @@ module afu
           16'h0008: tx.c2.data <= 64'h0;
 
           /*
+           * Buffer address
+           */
+          16'h000A: tx.c2.data <= buffer_addr;
+
+          /*
            * Unknown
            */
           default:  tx.c2.data <= 64'h0;
         endcase
       end else begin
         tx.c2.mmioRdValid <= 1'b0;
+      end
+
+      /*
+       * MMIO write request
+       */
+      if (rx.c0.mmioWrValid) begin
+        case (mmio_hdr.address)
+          16'h000A: buffer_addr <= rx.c0.data;
+        endcase
       end
     end
   end

@@ -1,11 +1,26 @@
 #include <opae/fpga.h>
 #include <uuid/uuid.h>
 #include <inttypes.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
 #include "afu_json_info.h"
+
+static void release_buffer(fpga_handle handle, uint64_t wsid) {
+  if (fpgaReleaseBuffer(handle, wsid) != FPGA_OK) {
+    fprintf(stderr, "Failed to release shared memory buffer\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+static void unmap_mmio_space(fpga_handle handle) {
+  if (fpgaUnmapMMIO(handle, 0) != FPGA_OK) {
+    fprintf(stderr, "Failed to unmap mmio space\n");
+    exit(EXIT_FAILURE);
+  }
+}
 
 static void close_fpga_handle(fpga_handle handle) {
   if (fpgaClose(handle) != FPGA_OK) {
@@ -81,9 +96,38 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  printf("Low guid bytes: %" PRIx64 "\n", mmio_space[1]);
-  printf("High guid bytes: %" PRIx64 "\n", mmio_space[2]);
+  uint64_t size = getpagesize();
+  uint64_t wsid = 0;
 
+  void *buffer = NULL;
+
+  if (fpgaPrepareBuffer(handle, size, buffer, &wsid, 0) != FPGA_OK) {
+    unmap_mmio_space(handle);
+    close_fpga_handle(handle);
+    destroy_token_object(&token);
+    destroy_properties_object(&filter);
+    fprintf(stderr, "Failed to prepare shared buffer\n");
+    return EXIT_FAILURE;
+  }
+
+  uint64_t physical_addr;
+
+  if (fpgaGetIOAddress(handle, wsid, &physical_addr) != FPGA_OK) {
+    release_buffer(handle, wsid);
+    unmap_mmio_space(handle);
+    close_fpga_handle(handle);
+    destroy_token_object(&token);
+    destroy_properties_object(&filter);
+    fprintf(stderr, "Failed to prepare shared buffer\n");
+    return EXIT_FAILURE;
+  }
+
+  /* Set shared memory address MMIO register */
+  mmio_space[5] = physical_addr;
+  printf("Current physical address is: %" PRIx64 "\n", mmio_space[5]);
+
+  release_buffer(handle, wsid);
+  unmap_mmio_space(handle);
   close_fpga_handle(handle);
   destroy_token_object(&token);
   destroy_properties_object(&filter);
