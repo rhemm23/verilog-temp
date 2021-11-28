@@ -124,7 +124,15 @@ int main() {
 
   /* Set shared memory address MMIO register */
   mmio_space[5] = physical_addr;
-  printf("Current physical address is: %" PRIx64 "\n", mmio_space[5]);
+
+  usleep(1000);
+
+  volatile char *buf = (volatile char*)buffer;
+
+  for (int i = 0; i < 7; i++) {
+    printf("%c ", buf[i]);
+  }
+  printf("\n");
 
   release_buffer(handle, wsid);
   unmap_mmio_space(handle);
