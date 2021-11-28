@@ -1,5 +1,6 @@
 #include <opae/fpga.h>
 #include <uuid/uuid.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -80,8 +81,8 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  printf("Low guid bytes: %llx\n", mmio_space[1]);
-  printf("High guid bytes: %llx\n", mmio_space[2]);
+  printf("Low guid bytes: %" PRIx64 "\n", mmio_space[1]);
+  printf("High guid bytes: %" PRIx64 "\n", mmio_space[2]);
 
   close_fpga_handle(handle);
   destroy_token_object(&token);
