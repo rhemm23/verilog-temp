@@ -130,7 +130,7 @@ int main() {
   volatile char *buf = (volatile char*)buffer;
 
   for (int i = 0; i < 7; i++) {
-    printf("%c ", buf[i]);
+    printf("%x ", buf[i]);
   }
   printf("\n");
 
