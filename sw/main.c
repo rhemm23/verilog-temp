@@ -101,7 +101,7 @@ int main() {
 
   void *buffer = NULL;
 
-  if (fpgaPrepareBuffer(handle, size, buffer, &wsid, 0) != FPGA_OK) {
+  if (fpgaPrepareBuffer(handle, size, &buffer, &wsid, 0) != FPGA_OK) {
     unmap_mmio_space(handle);
     close_fpga_handle(handle);
     destroy_token_object(&token);
@@ -118,7 +118,7 @@ int main() {
     close_fpga_handle(handle);
     destroy_token_object(&token);
     destroy_properties_object(&filter);
-    fprintf(stderr, "Failed to prepare shared buffer\n");
+    fprintf(stderr, "Failed to get IO address of buffer\n");
     return EXIT_FAILURE;
   }
 
