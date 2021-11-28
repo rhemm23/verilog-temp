@@ -73,7 +73,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  if (fgpaMapMMIO(handle, 0, &mmio_space) != FPGA_OK) {
+  if (fpgaMapMMIO(handle, 0, &mmio_space) != FPGA_OK) {
     close_fpga_handle(handle);
     destroy_token_object(&token);
     destroy_properties_object(&filter);
