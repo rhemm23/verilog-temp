@@ -18,6 +18,14 @@ module afu
   t_ccip_c0_ReqMmioHdr mmio_hdr;
   assign mmio_hdr = t_ccip_c0_ReqMmioHdr'(rx.c0.hdr);
 
+  assign tx.c1.data = t_ccip_clData'('h0021646c726f77206f6c6c6548);
+
+  t_cci_mpf_c1_ReqMemHdr wr_hdr;
+  assign wr_hdr = cci_mpf_c1_genReqHdr(eREQ_WRLINE_I,
+                                        mem_addr,
+                                        t_cci_mdata'(0),
+                                        cci_mpf_defaultReqHdrParams());
+
   always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
       buffer_addr <= 0;
@@ -83,7 +91,7 @@ module afu
           /*
            * Unknown
            */
-          default:  tx.c2.data <= 64'h0;
+          default: tx.c2.data <= 64'h0;
         endcase
       end else begin
         tx.c2.mmioRdValid <= 1'b0;
@@ -94,8 +102,28 @@ module afu
        */
       if (rx.c0.mmioWrValid) begin
         case (mmio_hdr.address)
-          16'h000A: buffer_addr <= rx.c0.data;
+          16'h000A: begin
+            // Store buffer address
+            buffer_addr <= rx.c0.data;
+
+            // Write 'Hello World!' to buffer
+            tx.c1.valid <= 1'b1;
+            tx.c1.data <= 512'h0021646c726f7720;
+            tx.c1.hdr <= '{
+              6'h00,
+              eVC_VA,
+              1'b1,
+              eMOD_CL,
+              eCL_LEN_1,
+              eREQ_WRLINE_I,
+              6'h00,
+              t_ccip_clAddr'(rx.c0.data),
+              16'h0000
+            };
+          end
         endcase
+      end else begin
+        tx.c1.valid <= 1'b0;
       end
     end
   end
