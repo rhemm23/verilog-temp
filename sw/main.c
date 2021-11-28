@@ -1,3 +1,4 @@
+#include <opae/fpga.h>
 #include <uuid/uuid.h>
 #include <stdint.h>
 #include <stdio.h>
