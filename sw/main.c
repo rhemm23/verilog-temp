@@ -1,5 +1,6 @@
 #include <opae/fpga.h>
 #include <uuid/uuid.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -20,7 +21,7 @@ int main() {
 
   uint32_t num_matches = 0;
   
-  if (uuid_parse(HELLO_AFU_ID, guid) < 0) {
+  if (uuid_parse(AFU_ACCEL_UUID, guid) < 0) {
     fprintf(stderr, "Error parsing AFU ID\n");
     return EXIT_FAILURE;
   }
